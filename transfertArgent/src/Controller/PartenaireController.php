@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\SerializerInterface;
 
@@ -29,7 +31,8 @@ class PartenaireController extends AbstractController
     }
 
     /**
-     * @Route("/new", name="partenaire_new", methods={"GET","POST"})
+     * @Route("/new", name="partenaire_new", methods={"POST"})
+     * @IsGranted("ROLE_SUPERUSER")
      */
     public function new(Request $request,EntityManagerInterface $entityManager ): Response
     {
