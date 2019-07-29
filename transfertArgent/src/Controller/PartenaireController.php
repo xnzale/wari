@@ -11,9 +11,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\SerializerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+
 
 /**
  * @Route("/api")
@@ -59,24 +61,34 @@ class PartenaireController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/edit", name="partenaire_edit", methods={"GET","POST"})
+     * @Route("/{id}/edit", name="partenaire_edit", methods={"PUT"})
      */
-    public function edit(Request $request, Partenaire $partenaire): Response
+    public function update(Request $request, SerializerInterface $serializer, Partenaire $partenaire, ValidatorInterface $validator, EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(PartenaireType::class, $partenaire);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->redirectToRoute('partenaire_index');
+        $partenaireUpdate= $entityManager->getRepository(Partenaire::class)->find($partenaire->getId());
+        $data = json_decode($request->getContent());
+        foreach ($data as $key => $value){
+            if($key && !empty($value)) {
+                $name = ucfirst($key);
+                $setter = 'set'.$name;
+                $partenaireUpdate->$setter($value);
+            }
         }
-
-        return $this->render('partenaire/edit.html.twig', [
-            'partenaire' => $partenaire,
-            'form' => $form->createView(),
-        ]);
+        $errors = $validator->validate($partenaireUpdate);
+        if(count($errors)) {
+            $errors = $serializer->serialize($errors, 'json');
+            return new Response($errors, 500, [
+                'Content-Type' => 'application/json'
+            ]);
+        }
+        $entityManager->flush();
+        $data = [
+            'status' => 200,
+            'message' => 'Le téléphone a bien été mis à jour'
+        ];
+        return new JsonResponse($data);
     }
+
 
     /**
      * @Route("/{id}", name="partenaire_delete", methods={"DELETE"})
