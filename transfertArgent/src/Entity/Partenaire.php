@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -37,6 +39,16 @@ class Partenaire
      * @ORM\Column(type="string", length=255)
      */
     private $numcompt;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Depot", mappedBy="idPartenaire")
+     */
+    private $depots;
+
+    public function __construct()
+    {
+        $this->depots = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -87,6 +99,37 @@ class Partenaire
     public function setNumcompt(string $numcompt): self
     {
         $this->numcompt = $numcompt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Depot[]
+     */
+    public function getDepots(): Collection
+    {
+        return $this->depots;
+    }
+
+    public function addDepot(Depot $depot): self
+    {
+        if (!$this->depots->contains($depot)) {
+            $this->depots[] = $depot;
+            $depot->setIdPartenaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDepot(Depot $depot): self
+    {
+        if ($this->depots->contains($depot)) {
+            $this->depots->removeElement($depot);
+            // set the owning side to null (unless already changed)
+            if ($depot->getIdPartenaire() === $this) {
+                $depot->setIdPartenaire(null);
+            }
+        }
 
         return $this;
     }
