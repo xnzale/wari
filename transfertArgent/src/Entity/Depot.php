@@ -29,7 +29,7 @@ class Depot
     private $dateDepot;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\partenaire", inversedBy="depots")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Partenaire", inversedBy="depots")
      */
     private $idPartenaire;
 

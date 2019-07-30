@@ -34,7 +34,6 @@ class SecurityController extends AbstractController
             $user->setNom($values->nom);
             $user->setTel($values->tel);
             $user->setAdresse($values->adresse);
-            //$user->setRoles(['ROLE_ADMIN']);
             $user->setRoles($values->roles);
             $errors = $validator->validate($user);
             if(count($errors)) {
@@ -71,4 +70,41 @@ class SecurityController extends AbstractController
             'roles' => $user->getRoles()
         ]);
     }
+        public function block(Request $request, User $user,  EntityManagerInterface $entityManager,SerializerInterface $serializer, ValidatorInterface $validator)
+        {
+            $userUpdate=$entityManager->getRepository (User::class)->find($user->getId());
+            $values = json_decode($request->getContent());
+            $user->getNom($values->nom);
+            $user->getTel($values->tel);
+            $user->getAdresse($values->adresse);
+
+            if($user->getStatut()=="BLOQUER")
+            {
+                $userUpdate->setStatut("DEBLOQUER");
+            }else{
+                $userUpdate->setStatut("BLOQUER");
+            }
+            $Statut=$values->Statut;
+            if($Statut=="DEBLOQUER")
+            {
+                $roles=["ROLE_BLOQUE"];
+            }
+            else{
+                $roles=$user->getStatut();
+            }
+            $user->setRoles($roles);
+            $errors=$validator->validate($userUpdate);
+            if(count($errors)){
+                 $errors = $serializer->serialize($errors,'json');
+                 return new Response($errors,500,[
+                     'Content-Type' => 'application/json'
+                 ]);
+            }
+            $entityManager->flush();
+            $data = [
+                'status' => 201,
+                'message'=> 'user where muted'
+            ];
+
+        }
 }

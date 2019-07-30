@@ -50,6 +50,11 @@ class User implements UserInterface
      */
     private $adresse;
 
+    /**
+     * @ORM\Column(type="string", length=20, nullable=true)
+     */
+    private $statut;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -155,6 +160,18 @@ class User implements UserInterface
     public function setAdresse(string $adresse): self
     {
         $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(?string $statut): self
+    {
+        $this->statut = $statut;
 
         return $this;
     }
