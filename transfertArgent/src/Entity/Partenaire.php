@@ -45,6 +45,16 @@ class Partenaire
      */
     private $depots;
 
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $solde;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $status;
+
     public function __construct()
     {
         $this->depots = new ArrayCollection();
@@ -130,6 +140,30 @@ class Partenaire
                 $depot->setIdPartenaire(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSolde(): ?float
+    {
+        return $this->solde;
+    }
+
+    public function setSolde(float $solde): self
+    {
+        $this->solde = $solde;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

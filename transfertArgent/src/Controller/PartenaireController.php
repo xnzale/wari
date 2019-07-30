@@ -84,23 +84,8 @@ class PartenaireController extends AbstractController
         $entityManager->flush();
         $data = [
             'status' => 200,
-            'message' => 'Le téléphone a bien été mis à jour'
+            'message' => 'Le partenaire a bien été mis à jour '
         ];
-        return new JsonResponse($data);
-    }
-
-
-    /**
-     * @Route("/{id}", name="partenaire_delete", methods={"DELETE"})
-     */
-    public function delete(Request $request, Partenaire $partenaire): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$partenaire->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($partenaire);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('partenaire_index');
+        return new JsonResponse($data );
     }
 }
